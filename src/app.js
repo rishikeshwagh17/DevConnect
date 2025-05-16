@@ -33,6 +33,25 @@ app.post("/user/login", (req, res) => {
 //     res.send("Hello User2");
 //   }
 // );
+
+//error handling code
+//this is most suitable approach for handling errors
+// another way to handle error
+// app.use((err, req, res, next) => {
+//   if (err) {
+//     console.log("error handling middleware");
+//     res.status(500).send(err.message);
+//   }
+// });
+
+app.get("/getUserData", (req, res) => {
+  try {
+    throw new Error("something went wrong");
+    res.send("hello user");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 app.listen(3000, () => {
   console.log("node server is running on port 3000");
 });
