@@ -4,16 +4,13 @@ const { userAuth, adminAuth } = require("./middleware/auth");
 const UserModel = require("./models/user");
 const app = express();
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-  const userObj = {
-    firstName: "Hrishikesh",
-    lastName: "Wagh",
-    emailId: "hrishikeshwagh123@okmail.com",
-    password: "hrishi@123",
-  };
+  console.log(req.body);
 
   //create a instance of the model
-  const user = new UserModel(userObj);
+  const user = new UserModel(req.body);
   //save the data into the database
   await user.save();
   res.status(200).send("user added successfully");
