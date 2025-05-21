@@ -3,6 +3,7 @@ const connectDB = require("./config/database");
 const { userAuth, adminAuth } = require("./middleware/auth");
 const UserModel = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -13,10 +14,17 @@ app.post("/signup", async (req, res) => {
     //never trust the request body
     //always validate the data
     validateSignupData(req);
+    const { firstName, lastName, emailId, password } = req.body;
     //encrypt the password
-
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
     //create a instance of the model
-    const user = new UserModel(req.body);
+    const user = new UserModel({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
     //save the data into the database
     await user.save();
     res.status(200).send("user added successfully");
