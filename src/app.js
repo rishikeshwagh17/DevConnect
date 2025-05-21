@@ -46,10 +46,26 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const updateData = req.body;
   try {
+    const ALLOWED_UPDATES = [
+      "photoUrl",
+      "about",
+      "gender",
+      "firstName",
+      "lastName",
+      "age",
+    ];
+
+    const isUpdateAllowed = Object.keys(updateData).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update Not Allowed");
+    }
     const user = await UserModel.findByIdAndUpdate(userId, updateData, {
       returnDocument: "after",
     });
