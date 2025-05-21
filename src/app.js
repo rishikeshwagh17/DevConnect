@@ -2,16 +2,27 @@ const express = require("express");
 const connectDB = require("./config/database");
 const { userAuth, adminAuth } = require("./middleware/auth");
 const UserModel = require("./models/user");
+const { validateSignupData } = require("./utils/validation");
+
 const app = express();
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  //create a instance of the model
-  const user = new UserModel(req.body);
-  //save the data into the database
-  await user.save();
-  res.status(200).send("user added successfully");
+  try {
+    //never trust the request body
+    //always validate the data
+    validateSignupData(req);
+    //encrypt the password
+
+    //create a instance of the model
+    const user = new UserModel(req.body);
+    //save the data into the database
+    await user.save();
+    res.status(200).send("user added successfully");
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
 });
 
 app.get("/user", async (req, res) => {
