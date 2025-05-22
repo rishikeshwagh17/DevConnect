@@ -17,19 +17,19 @@ and call the save method on userModel instance to make a post api call using pos
 
 //always use the router for the api express router
 
-authRouter
+##authRouter
 
     - POST /signup
     - POST /login
     - POST /logout
 
-ProfileRouter
+##ProfileRouter
 
     - PATCH /profile/view
     - GET /profile/edit
     - PATCH /profile/password
 
-ConnectionRequestRouter
+##ConnectionRequestRouter
 status: ignore, interested, accepted, rejected
 
     - POST /request/send/interested/:userId
@@ -37,7 +37,7 @@ status: ignore, interested, accepted, rejected
     - POST /request/review/accepted/:userId
     - POST /request/review/rejected/:userId
 
-userRouter
+##userRouter
 
     -GET /user/connections
     -GET /user/requests
