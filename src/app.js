@@ -1,6 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const { userAuth, adminAuth } = require("./middleware/auth");
+const { userAuth } = require("./middleware/auth");
 const UserModel = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
@@ -58,7 +58,7 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.delete("/user", async (req, res) => {
+app.delete("/user", userAuth, async (req, res) => {
   const userId = req.body.userId;
   try {
     const user = await UserModel.findByIdAndDelete(userId);
@@ -109,9 +109,13 @@ app.post("/login", async (req, res) => {
     if (isPasswordValid) {
       //JWT token generation
 
-      const token = await jwt.sign({ _id: user._id }, "DEV@Community$1799");
+      const token = await jwt.sign({ _id: user._id }, "DEV@Community$1799", {
+        expiresIn: "1d",
+      });
       //add the token to the cookie and send the response back to user
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
       res.status(200).send("Login successful!!");
     } else {
       throw new Error("Invalid Credentials");
@@ -121,29 +125,20 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-
-    //validate this token
-    if (!token) {
-      throw new Error("Invalid token");
-    }
-
-    const decodedMessage = await jwt.verify(token, "DEV@Community$1799");
-    const { _id } = decodedMessage;
-
-    //find the user inthe db by this id
-    const user = await UserModel.findById(_id);
-    if (!user) {
-      throw new Error("Please login again");
-    }
-
+    const { user } = req;
     res.status(200).send(user);
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }
+});
+
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  const { user } = req;
+
+  console.log("sending the connection request");
+  res.send(user.firstName + " send the connection request");
 });
 
 // app.post("/loginUser", async (req, res) => {
