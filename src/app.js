@@ -110,7 +110,6 @@ app.post("/login", async (req, res) => {
       //JWT token generation
 
       const token = await jwt.sign({ _id: user._id }, "DEV@Community$1799");
-      console.log(token);
       //add the token to the cookie and send the response back to user
       res.cookie("token", token);
       res.status(200).send("Login successful!!");
